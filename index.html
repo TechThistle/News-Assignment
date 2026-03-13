@@ -2,26 +2,138 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Simple News App</title>
-<link rel="stylesheet" href="style.css">
+<title>News App</title>
+
+<style>
+
+body{
+font-family: Arial;
+background:#f4f4f4;
+text-align:center;
+margin:0;
+}
+
+h1{
+background:#333;
+color:white;
+padding:15px;
+}
+
+.search-box{
+margin:20px;
+}
+
+input{
+padding:10px;
+width:250px;
+}
+
+button{
+padding:10px 15px;
+background:#007BFF;
+color:white;
+border:none;
+cursor:pointer;
+}
+
+#news-container{
+display:flex;
+flex-wrap:wrap;
+justify-content:center;
+gap:20px;
+padding:20px;
+}
+
+.card{
+width:300px;
+background:white;
+padding:15px;
+border-radius:8px;
+box-shadow:0 0 5px rgba(0,0,0,0.2);
+text-align:left;
+}
+
+.card h3{
+font-size:18px;
+}
+
+.card a{
+color:#007BFF;
+text-decoration:none;
+}
+
+</style>
+
 </head>
 
 <body>
 
-<h1>Latest News</h1>
+<h1>News App</h1>
 
-<div class="topics">
-<button data-topic="technology">Technology</button>
-<button data-topic="sports">Sports</button>
-<button data-topic="business">Business</button>
-<button data-topic="health">Health</button>
+<div class="search-box">
+
+<input type="text" id="searchInput" placeholder="Search topic">
+
+<button onclick="searchNews()">Search</button>
+
 </div>
 
-<div id="loader" class="loader">Loading news...</div>
+<div id="news-container"></div>
 
-<div id="newsContainer" class="news-container"></div>
+<script>
 
-<script src="script.js"></script>
+async function getNews(query){
+
+const url = `https://hn.algolia.com/api/v1/search?query=${query}`;
+
+const res = await fetch(url);
+
+const data = await res.json();
+
+showNews(data.hits);
+
+}
+
+function showNews(news){
+
+const container = document.getElementById("news-container");
+
+container.innerHTML="";
+
+news.forEach(article => {
+
+const card = document.createElement("div");
+
+card.className="card";
+
+card.innerHTML = `
+<h3>${article.title || "No Title"}</h3>
+<p>Author: ${article.author}</p>
+<a href="${article.url}" target="_blank">Read More</a>
+`;
+
+container.appendChild(card);
+
+});
+
+}
+
+function searchNews(){
+
+const query = document.getElementById("searchInput").value;
+
+getNews(query);
+
+}
+
+// default news on page load
+window.onload = function(){
+
+getNews("technology");
+
+}
+
+</script>
 
 </body>
 </html>
